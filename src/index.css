@@ -54,15 +54,19 @@ table {
 
 
 body {
+	margin: 0;
+	height: 100%;
   overflow: hidden;
 }
 
 .LandingContainer {
+	touch-action: none;
 	position: absolute;
 }
 
 .LandingTile {
 	float: left;
+	text-align: center;
 }
 
 
