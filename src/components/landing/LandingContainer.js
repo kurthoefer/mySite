@@ -196,7 +196,7 @@ class LandingContainer extends Component {
 		//*********************************//
 		//******** set nTiles below *******//
 		//*********************************//
-		var nTiles = 7;
+		var nTiles = 8;
 
 		var size = {
 			viewPortHeight: $(window).height(),

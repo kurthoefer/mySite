@@ -51,12 +51,11 @@ table {
 **************/
 
 
-
-
 body {
 	margin: 0;
 	height: 100%;
-  overflow: hidden;
+  	overflow: hidden;
+  	position: fixed;
 }
 
 .LandingContainer {
