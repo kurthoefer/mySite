@@ -38,7 +38,7 @@ class LandingContainer extends Component {
 	renderTiles() {
 		//render n tiles / give colors
 		var size = this.state.size,
-				colors = ['green', 'orange', 'purple', 'teal', 'red', 'eggshell', 'blue', 'yellow', 'green'],
+				colors = ['green', 'orange', 'purple', 'teal', 'red', 'black', 'blue', 'yellow', 'green'],
 				tiles = [],
 				tileSize = {
 					height: size.viewPortHeight,
@@ -69,12 +69,12 @@ class LandingContainer extends Component {
 			distY;
 
 
-		///////////////////
+		///////////////////  for endTouch()
 		var currentTile = currentOriginIndex + 1,
 			// tileRow = 1,
 			currentRow = 1,
-			currentColumb = 1;
-
+			currentColumb = 1,
+			nEmptyUnits = size.nColumbs - ( size.nTiles % size.nColumbs );
 		
 		/////////////////////
 
@@ -115,7 +115,6 @@ class LandingContainer extends Component {
 			// 	}
 			// }
 
-			console.log(`currentColumb was processed: ${currentColumb}`);
 
 			// $('.LandingTile').html(`currentColumb: ${currentColumb}`)
 
@@ -140,14 +139,16 @@ class LandingContainer extends Component {
 				}
 			}
 
+
 			// up & down
 			if( Math.abs(distY) > size.viewPortHeight / 3 ){
 				if( distY < 0 ){
 					//if distY is - test if origin can move down & find new OriginIndex
-					if( currentRow !== size.nRows ){
+					if( currentRow < size.nRows ){
 						currentOriginIndex += size.nColumbs
 						currentRow++
 						if( currentOriginIndex > size.nTiles - 1 ){
+							currentColumb -= nEmptyUnits
 							currentOriginIndex = size.nTiles - 1
 						}
 					}
@@ -159,6 +160,11 @@ class LandingContainer extends Component {
 					}
 				}
 			}
+			// console.log(`nTiles is: ${size.nTiles}`);
+			// console.log(`size.nColumbs: ${size.nColumbs}`);
+			// console.log(`size.nRows: ${size.nRows}`);
+			console.log(`currentColumb is: ${currentColumb}`);
+			console.log(`currentRow is: ${currentRow}`);
 
 			currentTile = currentOriginIndex + 1;
 			currentOrigin = origins[currentOriginIndex]
@@ -173,6 +179,8 @@ class LandingContainer extends Component {
 		}
 
 		function originToOffset() {
+			distX = 0
+			distY = 0
 			let x = currentOrigin[0]
 			let y = currentOrigin[1]
 			return { top: y, left: x }
@@ -188,17 +196,21 @@ class LandingContainer extends Component {
 		//*********************************//
 		//******** set nTiles below *******//
 		//*********************************//
-		var nTiles = 9;
+		var nTiles = 7;
 
 		var size = {
 			viewPortHeight: $(window).height(),
 			viewPortWidth: $(window).width(),
 			nTiles: nTiles,
 			nColumbs: Math.round(Math.sqrt(nTiles) - 0.20),
-			nRows: undefined
+			nRows: 0
 		};
 		//use better object decoration meathod for "size"
-		size.nRows = (nTiles % size.nColumbs > 0) ? size.nColumbs + 1 : size.nColumbs;
+		// size.nRows = (nTiles % size.nColumbs > 0) ? size.nColumbs + 1 : size.nColumbs;
+
+		for( let i = size.nTiles; i > 0; i -= size.nColumbs ) size.nRows++;
+
+
 
 
 		// origin loc generation
