@@ -38,7 +38,7 @@ class LandingContainer extends Component {
 	renderTiles() {
 		//render n tiles / give colors
 		var size = this.state.size,
-				colors = ['green', 'orange', 'purple', 'teal', 'red', 'grey'],
+				colors = ['green', 'orange', 'purple', 'teal', 'red', 'eggshell', 'blue', 'yellow', 'green'],
 				tiles = [],
 				tileSize = {
 					height: size.viewPortHeight,
@@ -58,22 +58,22 @@ class LandingContainer extends Component {
 
 	moveHandler() {
 		var	touchObj = {},
-				size = this.state.size,
-				origins = this.state.origins,
-				//move the following 2 to generateSize() if needed outside of moveHandler()
-				currentOrigin = origins[0],
-				currentOriginIndex = 0,
-				initX,
-				initY,
-				distX,
-				distY;
+			size = this.state.size,
+			origins = this.state.origins,
+			//move the following 2 to generateSize() if needed outside of moveHandler()
+			currentOrigin = origins[0],
+			currentOriginIndex = 0,
+			initX,
+			initY,
+			distX,
+			distY;
 
 
 		///////////////////
-		var tile = currentOriginIndex + 1,
-				currentRow = 1,
-				tileColumb = 1,
-				tileRow = 1;
+		var currentTile = currentOriginIndex + 1,
+			// tileRow = 1,
+			currentRow = 1,
+			currentColumb = 1;
 
 		
 		/////////////////////
@@ -100,34 +100,42 @@ class LandingContainer extends Component {
 			$('.LandingContainer').offset({ top: distY + currentOrigin[1], left: distX + currentOrigin[0] });
 
 			// for testing purposes
-			$('.LandingTile').html(`width: ${size.viewPortWidth}, height: ${size.viewPortHeight}, loc: ( ${distX}, ${distY} ), COIndex: ${currentOriginIndex}, currentOrigin: ${origins[currentOriginIndex]}, origins: ${origins[0]}`)
+			// $('.LandingTile').html(`width: ${size.viewPortWidth}, height: ${size.viewPortHeight}, loc: ( ${distX}, ${distY} ), COIndex: ${currentOriginIndex}, currentOrigin: ${origins[currentOriginIndex]}, currentTile: ${currentTile}`)
 		}
 
 		function endTouch(e) {
 			e.preventDefault();
+			// $('.LandingTile').html(`currentColumb: ${currentColumb}`)
 
-			for( let i = tile; i > 0; i - size.nColumbs ){
-				if( i <= size.nColumbs ){
-					tileColumb = i
-				}
-			}
+			// distinguish the columb that currentTile is located
+			// for( let i = currentTile; i > 0; i - size.nColumbs ){
+			// 	if( i <= size.nColumbs ) {
+			// 		currentColumb = i;
+			// 		break;
+			// 	}
+			// }
 
-			for( let i = size.nColumbs; i <= tile; i += size.nColumbs ){
-				if( i >= tile ) tileRow = currentRow
-					currentRow++
-			}
+			console.log(`currentColumb was processed: ${currentColumb}`);
+
+			// $('.LandingTile').html(`currentColumb: ${currentColumb}`)
+
+			// distinguish the row that currentTile is located
+			// for( let i = size.nColumbs; i < currentTile; i += size.nColumbs ) currentRow++;
+
 			// tile navigation changes origin
 			// left & right
 			if( Math.abs(distX) > size.viewPortWidth / 3 ){
 				if( distX < 0 ){
 					//if distX is - test if the origin can move right
-					if( tileColumb !== size.nColumbs && tile !== size.nTiles ){
+					if( currentColumb !== size.nColumbs && currentTile !== size.nTiles ){
 						currentOriginIndex++
+						currentColumb++
 					}
 				} else if( distX > 0 ){
 					//if distX is + test if the origin can move left
-					if( tile - 1 > 0 && tileColumb !== 1){
+					if( currentTile - 1 > 0 && currentColumb !== 1){
 						currentOriginIndex--
+						currentColumb--
 					}
 				}
 			}
@@ -136,22 +144,28 @@ class LandingContainer extends Component {
 			if( Math.abs(distY) > size.viewPortHeight / 3 ){
 				if( distY < 0 ){
 					//if distY is - test if origin can move down & find new OriginIndex
-					if( tileRow !== size.nRows ){
+					if( currentRow !== size.nRows ){
 						currentOriginIndex += size.nColumbs
+						currentRow++
 						if( currentOriginIndex > size.nTiles - 1 ){
 							currentOriginIndex = size.nTiles - 1
 						}
 					}
 				} else if( distY > 0 ){
 					//if distY is + test if origin can move up & find new OriginIndex
-					if( tileRow > 1 ){
+					if( currentRow > 1 ){
+						currentRow--
 						currentOriginIndex -= size.nColumbs
 					}
 				}
 			}
-			// recieveTouchList(e)
+
+			currentTile = currentOriginIndex + 1;
 			currentOrigin = origins[currentOriginIndex]
 			$('.LandingContainer').offset( originToOffset() )
+
+			// for testing purposes
+			// $('.LandingTile').html(`width: ${size.viewPortWidth}, height: ${size.viewPortHeight}, loc: ( ${distX}, ${distY} ), currentOriginIndex: ${currentOriginIndex}, currentOrigin: ${origins[currentOriginIndex]}, currentTile: ${currentTile}`)
 		}
 
 		function recieveTouchList(e) {
@@ -170,8 +184,12 @@ class LandingContainer extends Component {
 // should later revize to generateSpandrels 
 //													(since this function determines all the structural values to be used)
 	generateSize() {
-		// set nTiles here *******
-		var nTiles = 6;
+
+		//*********************************//
+		//******** set nTiles below *******//
+		//*********************************//
+		var nTiles = 9;
+
 		var size = {
 			viewPortHeight: $(window).height(),
 			viewPortWidth: $(window).width(),
@@ -179,24 +197,25 @@ class LandingContainer extends Component {
 			nColumbs: Math.round(Math.sqrt(nTiles) - 0.20),
 			nRows: undefined
 		};
+		//use better object decoration meathod for "size"
 		size.nRows = (nTiles % size.nColumbs > 0) ? size.nColumbs + 1 : size.nColumbs;
 
 
 		// origin loc generation
 		var origins = {}, 
-				currentRow = 0, 
-				currentColumb = 0;
+				currentRowIndex = 0, 
+				currentColumbIndex = 0;
 
 		for( var i = 0; i < size.nTiles; i++ ){
-			let x = size.viewPortWidth * currentColumb;
-			let y = size.viewPortHeight * currentRow;
+			let x = size.viewPortWidth * currentColumbIndex;
+			let y = size.viewPortHeight * currentRowIndex;
 
 			origins[ i ] = [ -x, -y ]
-			currentColumb++
+			currentColumbIndex++
 
-			if( currentColumb === size.nColumbs ){
-				currentColumb = 0
-				currentRow++
+			if( currentColumbIndex === size.nColumbs ){
+				currentColumbIndex = 0
+				currentRowIndex++
 			}
 		}
 
