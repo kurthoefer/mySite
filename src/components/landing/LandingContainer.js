@@ -49,7 +49,7 @@ class LandingContainer extends Component {
 		for(let i = 0; i < size.nTiles; i++) {
 			let styles = Object.assign({}, tileSize, { backgroundColor: colors[i] })
 			tiles.push(
-					<div className="LandingTile" style={styles}>
+					<div className="LandingTile" style={styles} key={i}>
 					</div>
 				)
  		}
@@ -71,7 +71,6 @@ class LandingContainer extends Component {
 
 		///////////////////  for endTouch()
 		var currentTile = currentOriginIndex + 1,
-			// tileRow = 1,
 			currentRow = 1,
 			currentColumb = 1,
 			nEmptyUnits = size.nColumbs - ( size.nTiles % size.nColumbs );
@@ -105,29 +104,17 @@ class LandingContainer extends Component {
 
 		function endTouch(e) {
 			e.preventDefault();
-			// $('.LandingTile').html(`currentColumb: ${currentColumb}`)
+			// overview:
+			// tile navigation ( w/ a swiping threashhold ) changes origin
 
-			// distinguish the columb that currentTile is located
-			// for( let i = currentTile; i > 0; i - size.nColumbs ){
-			// 	if( i <= size.nColumbs ) {
-			// 		currentColumb = i;
-			// 		break;
-			// 	}
-			// }
-
-
-			// $('.LandingTile').html(`currentColumb: ${currentColumb}`)
-
-			// distinguish the row that currentTile is located
-			// for( let i = size.nColumbs; i < currentTile; i += size.nColumbs ) currentRow++;
-
-			// tile navigation changes origin
-			// left & right
 			if( Math.abs(distX) > size.viewPortWidth / 3 ){
+				// left & right
 				if( distX < 0 ){
 					//if distX is - test if the origin can move right
 					if( currentColumb !== size.nColumbs && currentTile !== size.nTiles ){
+						//the current origin represents where the view with "snap to"
 						currentOriginIndex++
+						//we will need to keep track of where we are in space with the currentColumb and currentRow values ( both initialized above in the starting position (1, 1) )
 						currentColumb++
 					}
 				} else if( distX > 0 ){
@@ -206,7 +193,6 @@ class LandingContainer extends Component {
 			nRows: 0
 		};
 		//use better object decoration meathod for "size"
-		// size.nRows = (nTiles % size.nColumbs > 0) ? size.nColumbs + 1 : size.nColumbs;
 
 		for( let i = size.nTiles; i > 0; i -= size.nColumbs ) size.nRows++;
 
